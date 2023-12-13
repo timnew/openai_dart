@@ -59,6 +59,7 @@ class OpenaiClient {
     bool isBeta = false,
     http.CancellationToken? cancellationToken,
   }) async {
+    print("send request to ${config.baseUrl}/$endpoint\nwith header ${_authenticateHeaders(isBeta)..addAll(kJsonTypeHeader)}");
     final response = await client.post(
       Uri.parse("${config.baseUrl}/$endpoint"),
       headers: _authenticateHeaders(isBeta)..addAll(kJsonTypeHeader),
@@ -148,6 +149,12 @@ class OpenaiClient {
   }
 
   Map<String, String> _authenticateHeaders(bool isBeta) {
+    if (config.apiType == 'azure') {
+      return {
+        'api-key': config.apiKey,
+        'Content-Type': 'application/json',
+      };
+    }
     return {
       'Authorization': 'Bearer ${config.apiKey}',
       if (isBeta) 'OpenAI-Beta': 'assistants=v1',
@@ -172,7 +179,7 @@ class OpenaiClient {
           final error = OpenaiError.fromJson(res['error']);
           throw OpenaiException(code: response.statusCode, error: error);
         }
-
+print(res);
         /// receive a valid http status code but invalid error object
         throw OpenaiException(
           code: response.statusCode,

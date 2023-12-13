@@ -645,7 +645,12 @@ mixin _$ChatCompletionRequest {
   /// ID of the model to use. See the
   /// [model endpoint compatibility table](https://platform.openai.com/docs/models/model-endpoint-compatibility)
   /// for details on which models work with the Chat API.
-  String get model => throw _privateConstructorUsedError;
+  String? get model =>
+      throw _privateConstructorUsedError; // when engine is provided, model is ignored
+// deployment name in azure
+// https://learn.microsoft.com/zh-cn/azure/ai-services/openai/chatgpt-quickstart?tabs=command-line%2Cpython&pivots=programming-language-python
+  @JsonKey(ignore: true)
+  String? get engine => throw _privateConstructorUsedError;
 
   /// The messages to generate chat completions for, in the [chat format](https://platform.openai.com/docs/guides/chat/introduction).
   List<dynamic> get messages => throw _privateConstructorUsedError;
@@ -737,7 +742,7 @@ mixin _$ChatCompletionRequest {
   /// default if functions are present.
   dynamic get toolChoice => throw _privateConstructorUsedError;
 
-  /// A unique identifier representing your end-user, which can help OpenAI to
+  /// A unique identifier representing your end-user, which can help Open1AI to
   /// monitor and detect abuse. Learn more.
   String? get user => throw _privateConstructorUsedError;
 
@@ -754,7 +759,8 @@ abstract class $ChatCompletionRequestCopyWith<$Res> {
       _$ChatCompletionRequestCopyWithImpl<$Res, ChatCompletionRequest>;
   @useResult
   $Res call(
-      {String model,
+      {String? model,
+      @JsonKey(ignore: true) String? engine,
       List<dynamic> messages,
       @Deprecated("Use tools instead") List<ChatFunction>? functions,
       @Deprecated("use toolChoice instead") dynamic functionCall,
@@ -789,7 +795,8 @@ class _$ChatCompletionRequestCopyWithImpl<$Res,
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? model = null,
+    Object? model = freezed,
+    Object? engine = freezed,
     Object? messages = null,
     Object? functions = freezed,
     Object? functionCall = freezed,
@@ -808,10 +815,14 @@ class _$ChatCompletionRequestCopyWithImpl<$Res,
     Object? user = freezed,
   }) {
     return _then(_value.copyWith(
-      model: null == model
+      model: freezed == model
           ? _value.model
           : model // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
+      engine: freezed == engine
+          ? _value.engine
+          : engine // ignore: cast_nullable_to_non_nullable
+              as String?,
       messages: null == messages
           ? _value.messages
           : messages // ignore: cast_nullable_to_non_nullable
@@ -902,7 +913,8 @@ abstract class _$$ChatCompletionRequestImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String model,
+      {String? model,
+      @JsonKey(ignore: true) String? engine,
       List<dynamic> messages,
       @Deprecated("Use tools instead") List<ChatFunction>? functions,
       @Deprecated("use toolChoice instead") dynamic functionCall,
@@ -936,7 +948,8 @@ class __$$ChatCompletionRequestImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? model = null,
+    Object? model = freezed,
+    Object? engine = freezed,
     Object? messages = null,
     Object? functions = freezed,
     Object? functionCall = freezed,
@@ -955,10 +968,14 @@ class __$$ChatCompletionRequestImplCopyWithImpl<$Res>
     Object? user = freezed,
   }) {
     return _then(_$ChatCompletionRequestImpl(
-      model: null == model
+      model: freezed == model
           ? _value.model
           : model // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
+      engine: freezed == engine
+          ? _value.engine
+          : engine // ignore: cast_nullable_to_non_nullable
+              as String?,
       messages: null == messages
           ? _value._messages
           : messages // ignore: cast_nullable_to_non_nullable
@@ -1031,7 +1048,8 @@ class __$$ChatCompletionRequestImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ChatCompletionRequestImpl implements _ChatCompletionRequest {
   const _$ChatCompletionRequestImpl(
-      {required this.model,
+      {this.model,
+      @JsonKey(ignore: true) this.engine,
       required final List<dynamic> messages,
       @Deprecated("Use tools instead") final List<ChatFunction>? functions,
       @Deprecated("use toolChoice instead") this.functionCall,
@@ -1061,7 +1079,13 @@ class _$ChatCompletionRequestImpl implements _ChatCompletionRequest {
   /// [model endpoint compatibility table](https://platform.openai.com/docs/models/model-endpoint-compatibility)
   /// for details on which models work with the Chat API.
   @override
-  final String model;
+  final String? model;
+// when engine is provided, model is ignored
+// deployment name in azure
+// https://learn.microsoft.com/zh-cn/azure/ai-services/openai/chatgpt-quickstart?tabs=command-line%2Cpython&pivots=programming-language-python
+  @override
+  @JsonKey(ignore: true)
+  final String? engine;
 
   /// The messages to generate chat completions for, in the [chat format](https://platform.openai.com/docs/guides/chat/introduction).
   final List<dynamic> _messages;
@@ -1222,14 +1246,14 @@ class _$ChatCompletionRequestImpl implements _ChatCompletionRequest {
   @override
   final dynamic toolChoice;
 
-  /// A unique identifier representing your end-user, which can help OpenAI to
+  /// A unique identifier representing your end-user, which can help Open1AI to
   /// monitor and detect abuse. Learn more.
   @override
   final String? user;
 
   @override
   String toString() {
-    return 'ChatCompletionRequest(model: $model, messages: $messages, functions: $functions, functionCall: $functionCall, temperature: $temperature, topP: $topP, n: $n, stream: $stream, stop: $stop, maxTokens: $maxTokens, presencePenalty: $presencePenalty, frequencyPenalty: $frequencyPenalty, responseFormat: $responseFormat, logitBias: $logitBias, tools: $tools, toolChoice: $toolChoice, user: $user)';
+    return 'ChatCompletionRequest(model: $model, engine: $engine, messages: $messages, functions: $functions, functionCall: $functionCall, temperature: $temperature, topP: $topP, n: $n, stream: $stream, stop: $stop, maxTokens: $maxTokens, presencePenalty: $presencePenalty, frequencyPenalty: $frequencyPenalty, responseFormat: $responseFormat, logitBias: $logitBias, tools: $tools, toolChoice: $toolChoice, user: $user)';
   }
 
   @override
@@ -1238,6 +1262,7 @@ class _$ChatCompletionRequestImpl implements _ChatCompletionRequest {
         (other.runtimeType == runtimeType &&
             other is _$ChatCompletionRequestImpl &&
             (identical(other.model, model) || other.model == model) &&
+            (identical(other.engine, engine) || other.engine == engine) &&
             const DeepCollectionEquality().equals(other._messages, _messages) &&
             const DeepCollectionEquality()
                 .equals(other._functions, _functions) &&
@@ -1270,6 +1295,7 @@ class _$ChatCompletionRequestImpl implements _ChatCompletionRequest {
   int get hashCode => Object.hash(
       runtimeType,
       model,
+      engine,
       const DeepCollectionEquality().hash(_messages),
       const DeepCollectionEquality().hash(_functions),
       const DeepCollectionEquality().hash(functionCall),
@@ -1304,7 +1330,8 @@ class _$ChatCompletionRequestImpl implements _ChatCompletionRequest {
 
 abstract class _ChatCompletionRequest implements ChatCompletionRequest {
   const factory _ChatCompletionRequest(
-      {required final String model,
+      {final String? model,
+      @JsonKey(ignore: true) final String? engine,
       required final List<dynamic> messages,
       @Deprecated("Use tools instead") final List<ChatFunction>? functions,
       @Deprecated("use toolChoice instead") final dynamic functionCall,
@@ -1330,7 +1357,12 @@ abstract class _ChatCompletionRequest implements ChatCompletionRequest {
   /// ID of the model to use. See the
   /// [model endpoint compatibility table](https://platform.openai.com/docs/models/model-endpoint-compatibility)
   /// for details on which models work with the Chat API.
-  String get model;
+  String? get model;
+  @override // when engine is provided, model is ignored
+// deployment name in azure
+// https://learn.microsoft.com/zh-cn/azure/ai-services/openai/chatgpt-quickstart?tabs=command-line%2Cpython&pivots=programming-language-python
+  @JsonKey(ignore: true)
+  String? get engine;
   @override
 
   /// The messages to generate chat completions for, in the [chat format](https://platform.openai.com/docs/guides/chat/introduction).
@@ -1438,7 +1470,7 @@ abstract class _ChatCompletionRequest implements ChatCompletionRequest {
   dynamic get toolChoice;
   @override
 
-  /// A unique identifier representing your end-user, which can help OpenAI to
+  /// A unique identifier representing your end-user, which can help Open1AI to
   /// monitor and detect abuse. Learn more.
   String? get user;
   @override

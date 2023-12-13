@@ -1,5 +1,7 @@
 import 'package:openai_api/openai_api.dart';
 import 'package:test/test.dart';
+import './env.dart';
+
 
 void main() {
   group('A group of tests', () {
@@ -37,6 +39,30 @@ void main() {
 
       expect(OpenaiConfig(apiKey: key, baseUrl: "https://abc.com/ccc/").baseUrl,
           equals("https://abc.com/ccc/v1"));
+    });
+  });
+
+  group('azure openai api test', () {
+    test('azure openai api test', () async {
+      final openai = OpenaiClient(
+        config: OpenaiConfig(
+          baseUrl: Env.baseUrl,
+          apiType: "azure",
+          apiVersion: "2023-07-01-preview",
+          apiKey: Env.azureApiKey,
+        ),
+      );
+
+      final request =
+        ChatCompletionRequest(engine: 'GPT-35-Turbo-16k', messages: [
+        ChatMessage(
+            content: "Hello, how are you?", role: ChatMessageRole.system),
+      ]);
+
+      final resp = await openai.sendChatCompletion(request);
+      resp.choices.forEach((element) {
+        print(element);
+      });
     });
   });
 }

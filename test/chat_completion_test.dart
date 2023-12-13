@@ -47,6 +47,26 @@ void main() {
           }));
     });
 
+    test('request azure', () {
+        final request =
+        ChatCompletionRequest(engine: 'gpt-3.5-turbo', messages: [
+        ChatMessage(
+            content: "Hello, how are you?", role: ChatMessageRole.system),
+      ]);
+      expect(
+        jsonEncode(request.toJson()),
+        jsonEncode({
+            "engine": "gpt-3.5-turbo",
+            "messages": [
+              {
+                "content": "Hello, how are you?",
+                "role": "system",
+              }
+            ]
+          })
+      );
+    });
+
     test('custom request', () {
       final request = ChatCompletionRequest(
         model: Models.gpt3_5Turbo,

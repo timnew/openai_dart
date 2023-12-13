@@ -7,6 +7,9 @@ abstract class Env {
   @EnviedField(varName: 'OPENAI_API_KEY')
   static const String apiKey = _Env.apiKey;
 
+  @EnviedField(varName: 'AZURE_API_KEY')
+  static const String azureApiKey = _Env.azureApiKey;
+
   @EnviedField(varName: 'HTTP_PROXY', defaultValue: '')
   static const String httpProxy = _Env.httpProxy;
 

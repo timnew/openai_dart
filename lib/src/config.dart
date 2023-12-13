@@ -2,13 +2,21 @@ import 'constants.dart';
 
 class OpenaiConfig {
   OpenaiConfig({
+    this.apiType,
     required this.apiKey,
+    this.apiVersion,
     this.organizationId,
     String? baseUrl,
     this.httpProxy,
   }) {
     _baseUrl = baseUrl ?? Constants.kBaseUrl;
   }
+
+  /// apiType: [openai | azure], default as openai
+  final String? apiType;
+
+  // apiVersion: such as "2023-05-15", "2023-07-01-preview" (azure needed)
+  final String? apiVersion;
 
   /// [apiKey] is the API key for your OpenAI account.
   final String apiKey;
@@ -26,6 +34,7 @@ class OpenaiConfig {
   final String? httpProxy;
 
   String get baseUrl {
+    if (apiType == 'azure') return _baseUrl;
     if (_baseUrl.endsWith("/")) {
       _baseUrl = _baseUrl.replaceAll(RegExp(r'/+$'), "");
     }
