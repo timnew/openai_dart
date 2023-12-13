@@ -512,7 +512,7 @@ extension ChatCompletion on OpenaiClient {
   static const kEndpoint = "chat/completions";
 
   String gEndpoint(String endpoint, ChatCompletionRequest request) {
-    if (config.apiType == "azure") {
+    if (config.isAzure) {
       return "openai/deployments/${request.engine}/$endpoint?api-version=${config.apiVersion}";
     }
     return endpoint;

@@ -56,13 +56,9 @@ void main() {
           throwsA(
             isA<OpenaiException>()
                 .having((p0) => p0.code, "status code is not 401", 401)
-                .having(
-                    (p0) => p0.error.message,
-                    "error message conversion is not correct",
+                .having((p0) => p0.error.message, "error message conversion is not correct",
                     "You didn't provide an API key. You need to provide your API key in an Authorization header using Bearer auth (i.e. Authorization: Bearer YOUR_KEY), or as the password field (with blank username) if you're accessing the API from your browser and are prompted for a username and password. You can obtain an API key from https://platform.openai.com/account/api-keys.")
-                .having(
-                    (p0) => p0.error.type,
-                    "error type conversion is not correct",
+                .having((p0) => p0.error.type, "error type conversion is not correct",
                     "invalid_request_error"),
           ));
     });
@@ -82,8 +78,7 @@ void main() {
           throwsA(
             isA<OpenaiException>()
                 .having((p0) => p0.code, "invalid http status code", 401)
-                .having((p0) => p0.error.type, "error type must be unkown_type",
-                    "unkown_type"),
+                .having((p0) => p0.error.type, "error type must be unkown_type", "unkown_type"),
           ));
     });
 
@@ -100,24 +95,21 @@ void main() {
       expect(
           () => client.sendRequest("/demo", ""),
           throwsA(
-            isA<OpenaiException>()
-                .having((p0) => p0.code, "invalid http status code", -1)
-                .having((p0) => p0.error.type, "error type must be unkown_type",
-                    "invalid_json_format"),
+            isA<OpenaiException>().having((p0) => p0.code, "invalid http status code", -1).having(
+                (p0) => p0.error.type, "error type must be unkown_type", "invalid_json_format"),
           ));
     });
 
     test('stream request', () {
       final client = OpenaiClient(
           config: OpenaiConfig(apiKey: "xx"),
-          httpClient: MockClient.streaming((request, bodyStream) async =>
-              http.StreamedResponse(stream(), 200)));
+          httpClient: MockClient.streaming(
+              (request, bodyStream) async => http.StreamedResponse(stream(), 200)));
       client.sendStreamRequest(
         "///",
         "ssss",
         onSuccess: (p0) {
-          expect(ChatCompletionResponse.fromJson(p0),
-              isA<ChatCompletionResponse>(),
+          expect(ChatCompletionResponse.fromJson(p0), isA<ChatCompletionResponse>(),
               reason: "response type is not ChatCompletionResponse");
         },
       );
@@ -126,8 +118,8 @@ void main() {
     test('stream request error', () async {
       final client = OpenaiClient(
           config: OpenaiConfig(apiKey: "xx"),
-          httpClient: MockClient.streaming((request, bodyStream) async =>
-              http.StreamedResponse(streamError(), 400)));
+          httpClient: MockClient.streaming(
+              (request, bodyStream) async => http.StreamedResponse(streamError(), 400)));
 
       expect(
           () => client.sendStreamRequest(
@@ -145,8 +137,7 @@ void main() {
 
       expect(client.config.apiKey, "1234");
       // expect(client.client, isNot(isA<IOClient>()));
-      client.updateConfig(
-          OpenaiConfig(apiKey: "44444", httpProxy: "http://1234.com:7900"));
+      client.updateConfig(OpenaiConfig(apiKey: "44444", httpProxy: "http://1234.com:7900"));
 
       expect(
         client.config,

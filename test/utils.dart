@@ -47,7 +47,7 @@ Stream<List<int>> streamError() async* {
 final proxyedClient = OpenaiClient(
   config: OpenaiConfig(
     apiKey: Env.apiKey,
-    baseUrl: Env.baseUrl,
+    apiBaseUrl: Env.baseUrl,
     httpProxy: Env.httpProxy,
   ),
 );
