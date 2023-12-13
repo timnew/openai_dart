@@ -56,7 +56,6 @@ void main() {
       expect(
         jsonEncode(request.toJson()),
         jsonEncode({
-            "engine": "gpt-3.5-turbo",
             "messages": [
               {
                 "content": "Hello, how are you?",

@@ -153,7 +153,7 @@ class ChatCompletionRequest with _$ChatCompletionRequest {
     /// default if functions are present.
     dynamic toolChoice,
 
-    /// A unique identifier representing your end-user, which can help Open1AI to
+    /// A unique identifier representing your end-user, which can help OpenAI to
     /// monitor and detect abuse. Learn more.
     String? user,
   }) = _ChatCompletionRequest;

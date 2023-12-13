@@ -742,7 +742,7 @@ mixin _$ChatCompletionRequest {
   /// default if functions are present.
   dynamic get toolChoice => throw _privateConstructorUsedError;
 
-  /// A unique identifier representing your end-user, which can help Open1AI to
+  /// A unique identifier representing your end-user, which can help OpenAI to
   /// monitor and detect abuse. Learn more.
   String? get user => throw _privateConstructorUsedError;
 
@@ -1246,7 +1246,7 @@ class _$ChatCompletionRequestImpl implements _ChatCompletionRequest {
   @override
   final dynamic toolChoice;
 
-  /// A unique identifier representing your end-user, which can help Open1AI to
+  /// A unique identifier representing your end-user, which can help OpenAI to
   /// monitor and detect abuse. Learn more.
   @override
   final String? user;
@@ -1470,7 +1470,7 @@ abstract class _ChatCompletionRequest implements ChatCompletionRequest {
   dynamic get toolChoice;
   @override
 
-  /// A unique identifier representing your end-user, which can help Open1AI to
+  /// A unique identifier representing your end-user, which can help OpenAI to
   /// monitor and detect abuse. Learn more.
   String? get user;
   @override
