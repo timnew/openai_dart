@@ -1487,7 +1487,7 @@ ResponseFormat _$ResponseFormatFromJson(Map<String, dynamic> json) {
 mixin _$ResponseFormat {
   /// Must be one of text or json_object.
   /// Defaults to text
-  String get text => throw _privateConstructorUsedError;
+  String get type => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -1501,7 +1501,7 @@ abstract class $ResponseFormatCopyWith<$Res> {
           ResponseFormat value, $Res Function(ResponseFormat) then) =
       _$ResponseFormatCopyWithImpl<$Res, ResponseFormat>;
   @useResult
-  $Res call({String text});
+  $Res call({String type});
 }
 
 /// @nodoc
@@ -1517,12 +1517,12 @@ class _$ResponseFormatCopyWithImpl<$Res, $Val extends ResponseFormat>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? text = null,
+    Object? type = null,
   }) {
     return _then(_value.copyWith(
-      text: null == text
-          ? _value.text
-          : text // ignore: cast_nullable_to_non_nullable
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -1536,7 +1536,7 @@ abstract class _$$ResponseFormatImplCopyWith<$Res>
       __$$ResponseFormatImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String text});
+  $Res call({String type});
 }
 
 /// @nodoc
@@ -1550,12 +1550,12 @@ class __$$ResponseFormatImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? text = null,
+    Object? type = null,
   }) {
     return _then(_$ResponseFormatImpl(
-      text: null == text
-          ? _value.text
-          : text // ignore: cast_nullable_to_non_nullable
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -1564,7 +1564,7 @@ class __$$ResponseFormatImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$ResponseFormatImpl implements _ResponseFormat {
-  const _$ResponseFormatImpl({required this.text});
+  const _$ResponseFormatImpl({required this.type});
 
   factory _$ResponseFormatImpl.fromJson(Map<String, dynamic> json) =>
       _$$ResponseFormatImplFromJson(json);
@@ -1572,11 +1572,11 @@ class _$ResponseFormatImpl implements _ResponseFormat {
   /// Must be one of text or json_object.
   /// Defaults to text
   @override
-  final String text;
+  final String type;
 
   @override
   String toString() {
-    return 'ResponseFormat(text: $text)';
+    return 'ResponseFormat(type: $type)';
   }
 
   @override
@@ -1584,12 +1584,12 @@ class _$ResponseFormatImpl implements _ResponseFormat {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ResponseFormatImpl &&
-            (identical(other.text, text) || other.text == text));
+            (identical(other.type, type) || other.type == type));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, text);
+  int get hashCode => Object.hash(runtimeType, type);
 
   @JsonKey(ignore: true)
   @override
@@ -1607,7 +1607,7 @@ class _$ResponseFormatImpl implements _ResponseFormat {
 }
 
 abstract class _ResponseFormat implements ResponseFormat {
-  const factory _ResponseFormat({required final String text}) =
+  const factory _ResponseFormat({required final String type}) =
       _$ResponseFormatImpl;
 
   factory _ResponseFormat.fromJson(Map<String, dynamic> json) =
@@ -1617,7 +1617,7 @@ abstract class _ResponseFormat implements ResponseFormat {
 
   /// Must be one of text or json_object.
   /// Defaults to text
-  String get text;
+  String get type;
   @override
   @JsonKey(ignore: true)
   _$$ResponseFormatImplCopyWith<_$ResponseFormatImpl> get copyWith =>

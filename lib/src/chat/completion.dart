@@ -177,7 +177,7 @@ class ResponseFormat with _$ResponseFormat {
   const factory ResponseFormat({
     /// Must be one of text or json_object.
     /// Defaults to text
-    required String text,
+    required String type,
   }) = _ResponseFormat;
   factory ResponseFormat.fromJson(Map<String, Object?> json) => _$ResponseFormatFromJson(json);
 }

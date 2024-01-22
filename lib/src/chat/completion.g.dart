@@ -139,13 +139,13 @@ Map<String, dynamic> _$$ChatCompletionRequestImplToJson(
 
 _$ResponseFormatImpl _$$ResponseFormatImplFromJson(Map<String, dynamic> json) =>
     _$ResponseFormatImpl(
-      text: json['text'] as String,
+      type: json['type'] as String,
     );
 
 Map<String, dynamic> _$$ResponseFormatImplToJson(
         _$ResponseFormatImpl instance) =>
     <String, dynamic>{
-      'text': instance.text,
+      'type': instance.type,
     };
 
 _$ToolChoiceImpl _$$ToolChoiceImplFromJson(Map<String, dynamic> json) =>
