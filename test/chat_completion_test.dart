@@ -6,6 +6,7 @@ import 'package:cancellation_token_http/testing.dart';
 import 'package:openai_api/openai_api.dart';
 import 'package:test/test.dart';
 
+import 'env.dart';
 import 'utils.dart';
 
 void main() {
@@ -29,10 +30,8 @@ void main() {
       }
       """;
     test('request', () {
-      final request =
-          ChatCompletionRequest(model: Models.gpt3_5Turbo, messages: [
-        ChatMessage(
-            content: "Hello, how are you?", role: ChatMessageRole.system),
+      final request = ChatCompletionRequest(model: Models.gpt3_5Turbo, messages: [
+        ChatMessage(content: "Hello, how are you?", role: ChatMessageRole.system),
       ]);
       expect(
           jsonEncode(request.toJson()),
@@ -47,12 +46,27 @@ void main() {
           }));
     });
 
+    test('request azure', () {
+      final request = ChatCompletionRequest(engine: 'gpt-3.5-turbo', messages: [
+        ChatMessage(content: "Hello, how are you?", role: ChatMessageRole.system),
+      ]);
+      expect(
+          jsonEncode(request.toJson()),
+          jsonEncode({
+            "messages": [
+              {
+                "content": "Hello, how are you?",
+                "role": "system",
+              }
+            ]
+          }));
+    });
+
     test('custom request', () {
       final request = ChatCompletionRequest(
         model: Models.gpt3_5Turbo,
         messages: [
-          ChatMessage(
-              content: "Hello, how are you?", role: ChatMessageRole.system),
+          ChatMessage(content: "Hello, how are you?", role: ChatMessageRole.system),
         ],
         temperature: 0.5,
         topP: 0.5,
@@ -87,15 +101,12 @@ void main() {
       expect(
         res,
         isA<ChatCompletionResponse>()
-            .having(
-                (p0) => p0.created, "created time is not correct", 1677649420)
+            .having((p0) => p0.created, "created time is not correct", 1677649420)
             .having((p0) => p0.choices, "choice is empty", isNotEmpty)
-            .having((p0) => p0.choices.first.index,
-                "first choice's index should be 0", 0)
-            .having((p0) => p0.choices.first.message?.role,
-                "message role should be assistant", ChatMessageRole.assistant)
-            .having(
-                (p0) => p0.object, "object is not correct", "chat.completion"),
+            .having((p0) => p0.choices.first.index, "first choice's index should be 0", 0)
+            .having((p0) => p0.choices.first.message?.role, "message role should be assistant",
+                ChatMessageRole.assistant)
+            .having((p0) => p0.object, "object is not correct", "chat.completion"),
       );
     });
 
@@ -111,12 +122,10 @@ void main() {
           ));
 
       expect(
-        await client.sendChatCompletion(
-            ChatCompletionRequest(model: Models.davinci, messages: [])),
+        await client.sendChatCompletion(ChatCompletionRequest(model: Models.davinci, messages: [])),
         isA<ChatCompletionResponse>()
             .having((p0) => p0.created, "invalid created tiem", 1677649420)
-            .having((p0) => p0.choices.first.finishReason,
-                "finish reason should be stop", "stop"),
+            .having((p0) => p0.choices.first.finishReason, "finish reason should be stop", "stop"),
       );
     });
     test('stream http request', () async {
@@ -133,8 +142,35 @@ void main() {
         onSuccess: (res) {
           expect(
             res,
-            isA<ChatCompletionResponse>().having((p0) => p0.choices.first.delta,
-                "delta should be not null", isNotNull),
+            isA<ChatCompletionResponse>()
+                .having((p0) => p0.choices.first.delta, "delta should be not null", isNotNull),
+          );
+
+          if (res.choices.first.delta?.content != null) {
+            result += res.choices.first.delta!.content!;
+          }
+        },
+      );
+      print(result);
+    });
+
+    test('stream azure http request', () async {
+      final client = OpenaiClient(
+        config: OpenaiConfig.azure(
+            apiKey: Env.azureApiKey, apiBaseUrl: Env.baseUrl, apiVersion: Env.azureApiVersion),
+        httpClient: MockClient.streaming((req, body) async {
+          return StreamedResponse(stream(), 200);
+        }),
+      );
+
+      var result = "";
+      await client.sendChatCompletionStream(
+        ChatCompletionRequest(engine: Env.azureDeploymentName, messages: []),
+        onSuccess: (res) {
+          expect(
+            res,
+            isA<ChatCompletionResponse>()
+                .having((p0) => p0.choices.first.delta, "delta should be not null", isNotNull),
           );
 
           if (res.choices.first.delta?.content != null) {
@@ -158,20 +194,17 @@ void main() {
         image: f.readAsBytesSync(),
       ));
 
-      final request = ChatCompletionRequest(
-          model: Models.gpt4_1106VisonPreview,
-          maxTokens: 500,
-          messages: [
-            ChatMessage.system(content: "Hello, how are you?"),
-            ChatMessage.user(content: [
-              TextContent(
-                text:
-                    "show me what you see in the following image? Are the two images the same?",
-              ),
-              ic,
-              ic2,
-            ]),
-          ]);
+      final request =
+          ChatCompletionRequest(model: Models.gpt4_1106VisonPreview, maxTokens: 500, messages: [
+        ChatMessage.system(content: "Hello, how are you?"),
+        ChatMessage.user(content: [
+          TextContent(
+            text: "show me what you see in the following image? Are the two images the same?",
+          ),
+          ic,
+          ic2,
+        ]),
+      ]);
       final result = await proxyedClient.sendChatCompletion(request);
       print(result);
     });

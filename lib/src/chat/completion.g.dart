@@ -80,7 +80,7 @@ Map<String, dynamic> _$$ChatChoiceDeltaImplToJson(
 _$ChatCompletionRequestImpl _$$ChatCompletionRequestImplFromJson(
         Map<String, dynamic> json) =>
     _$ChatCompletionRequestImpl(
-      model: json['model'] as String,
+      model: json['model'] as String?,
       messages: json['messages'] as List<dynamic>,
       functions: (json['functions'] as List<dynamic>?)
           ?.map((e) => ChatFunction.fromJson(e as Map<String, dynamic>))
@@ -108,10 +108,7 @@ _$ChatCompletionRequestImpl _$$ChatCompletionRequestImplFromJson(
 
 Map<String, dynamic> _$$ChatCompletionRequestImplToJson(
     _$ChatCompletionRequestImpl instance) {
-  final val = <String, dynamic>{
-    'model': instance.model,
-    'messages': instance.messages,
-  };
+  final val = <String, dynamic>{};
 
   void writeNotNull(String key, dynamic value) {
     if (value != null) {
@@ -119,6 +116,8 @@ Map<String, dynamic> _$$ChatCompletionRequestImplToJson(
     }
   }
 
+  writeNotNull('model', instance.model);
+  val['messages'] = instance.messages;
   writeNotNull(
       'functions', instance.functions?.map((e) => e.toJson()).toList());
   writeNotNull('function_call', instance.functionCall);
@@ -140,13 +139,13 @@ Map<String, dynamic> _$$ChatCompletionRequestImplToJson(
 
 _$ResponseFormatImpl _$$ResponseFormatImplFromJson(Map<String, dynamic> json) =>
     _$ResponseFormatImpl(
-      text: json['text'] as String,
+      type: json['type'] as String,
     );
 
 Map<String, dynamic> _$$ResponseFormatImplToJson(
         _$ResponseFormatImpl instance) =>
     <String, dynamic>{
-      'text': instance.text,
+      'type': instance.type,
     };
 
 _$ToolChoiceImpl _$$ToolChoiceImplFromJson(Map<String, dynamic> json) =>

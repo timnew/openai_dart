@@ -28,8 +28,7 @@ class ChatChoice with _$ChatChoice {
     FinishDetails? finishDetails,
   }) = _ChatChoice;
 
-  factory ChatChoice.fromJson(Map<String, Object?> json) =>
-      _$ChatChoiceFromJson(json);
+  factory ChatChoice.fromJson(Map<String, Object?> json) => _$ChatChoiceFromJson(json);
 }
 
 @freezed
@@ -38,8 +37,7 @@ class FinishDetails with _$FinishDetails {
     required String type,
   }) = _FinishDetails;
 
-  factory FinishDetails.fromJson(Map<String, Object?> json) =>
-      _$FinishDetailsFromJson(json);
+  factory FinishDetails.fromJson(Map<String, Object?> json) => _$FinishDetailsFromJson(json);
 }
 
 @freezed
@@ -50,8 +48,7 @@ class ChatChoiceDelta with _$ChatChoiceDelta {
     List<MessageToolCall>? toolCalls,
   }) = _ChatChoiceDelta;
 
-  factory ChatChoiceDelta.fromJson(Map<String, Object?> json) =>
-      _$ChatChoiceDeltaFromJson(json);
+  factory ChatChoiceDelta.fromJson(Map<String, Object?> json) => _$ChatChoiceDeltaFromJson(json);
 }
 
 /// ChatCompletionRequest is the request body for the chat completion endpoint.
@@ -61,7 +58,12 @@ class ChatCompletionRequest with _$ChatCompletionRequest {
     /// ID of the model to use. See the
     /// [model endpoint compatibility table](https://platform.openai.com/docs/models/model-endpoint-compatibility)
     /// for details on which models work with the Chat API.
-    required String model,
+    String? model,
+
+    // when engine is provided, model is ignored
+    // deployment name in azure
+    // https://learn.microsoft.com/zh-cn/azure/ai-services/openai/chatgpt-quickstart?tabs=command-line%2Cpython&pivots=programming-language-python
+    @JsonKey(ignore: true) String? engine,
 
     /// The messages to generate chat completions for, in the [chat format](https://platform.openai.com/docs/guides/chat/introduction).
     required List<dynamic> messages,
@@ -175,19 +177,16 @@ class ResponseFormat with _$ResponseFormat {
   const factory ResponseFormat({
     /// Must be one of text or json_object.
     /// Defaults to text
-    required String text,
+    required String type,
   }) = _ResponseFormat;
-  factory ResponseFormat.fromJson(Map<String, Object?> json) =>
-      _$ResponseFormatFromJson(json);
+  factory ResponseFormat.fromJson(Map<String, Object?> json) => _$ResponseFormatFromJson(json);
 }
 
 @freezed
 class ToolChoice with _$ToolChoice {
-  const factory ToolChoice({String? type, ChatFunction? function}) =
-      _ToolChoice;
+  const factory ToolChoice({String? type, ChatFunction? function}) = _ToolChoice;
 
-  factory ToolChoice.fromJson(Map<String, Object?> json) =>
-      _$ToolChoiceFromJson(json);
+  factory ToolChoice.fromJson(Map<String, Object?> json) => _$ToolChoiceFromJson(json);
 }
 
 @freezed
@@ -198,8 +197,7 @@ class ChatTool with _$ChatTool {
     required ChatFunction function,
   }) = _ChatTool;
 
-  factory ChatTool.fromJson(Map<String, Object?> json) =>
-      _$ChatToolFromJson(json);
+  factory ChatTool.fromJson(Map<String, Object?> json) => _$ChatToolFromJson(json);
 }
 
 /// ChatCompletionResponse is the response body for the chat completion endpoint.
@@ -291,8 +289,7 @@ class ChatMessage with _$ChatMessage {
     /// Tool call that this message is responding to.
     String? toolCallId,
   }) = _ChatMessage;
-  factory ChatMessage.fromJson(Map<String, Object?> json) =>
-      _$ChatMessageFromJson(json);
+  factory ChatMessage.fromJson(Map<String, Object?> json) => _$ChatMessageFromJson(json);
   factory ChatMessage.system({
     required String content,
     String? name,
@@ -350,8 +347,7 @@ class TextContent with _$TextContent {
     required String text,
     @Default(MessageContentType.text) MessageContentType type,
   }) = _TextContent;
-  factory TextContent.fromJson(Map<String, dynamic> json) =>
-      _$TextContentFromJson(json);
+  factory TextContent.fromJson(Map<String, dynamic> json) => _$TextContentFromJson(json);
 }
 
 @freezed
@@ -362,8 +358,7 @@ class ImageContent with _$ImageContent {
     @Default(MessageContentType.imageUrl) MessageContentType type,
   }) = _ImageContent;
 
-  factory ImageContent.fromJson(Map<String, dynamic> json) =>
-      _$ImageContentFromJson(json);
+  factory ImageContent.fromJson(Map<String, dynamic> json) => _$ImageContentFromJson(json);
 }
 
 ///By controlling the detail parameter, which has three options, low, high, or
@@ -406,8 +401,7 @@ class ImageUrl with _$ImageUrl {
     return ImageUrl(url: url, detail: detail);
   }
 
-  factory ImageUrl.fromJson(Map<String, dynamic> json) =>
-      _$ImageUrlFromJson(json);
+  factory ImageUrl.fromJson(Map<String, dynamic> json) => _$ImageUrlFromJson(json);
 }
 
 @freezed
@@ -425,8 +419,7 @@ class MessageToolCall with _$MessageToolCall {
     required ChatFunctionCall function,
   }) = _MessageToolCall;
 
-  factory MessageToolCall.fromJson(Map<String, Object?> json) =>
-      _$MessageToolCallFromJson(json);
+  factory MessageToolCall.fromJson(Map<String, Object?> json) => _$MessageToolCallFromJson(json);
 }
 
 @freezed
@@ -441,8 +434,7 @@ class ChatFunctionCall with _$ChatFunctionCall {
     /// Validate the arguments in your code before calling your function.
     required String arguments,
   }) = _ChatFunctionCall;
-  factory ChatFunctionCall.fromJson(Map<String, Object?> json) =>
-      _$ChatFunctionCallFromJson(json);
+  factory ChatFunctionCall.fromJson(Map<String, Object?> json) => _$ChatFunctionCallFromJson(json);
 }
 
 @freezed
@@ -488,8 +480,7 @@ class ChatFunction with _$ChatFunction {
     ChatFunctionParameters? parameters,
   }) = _ChatFunction;
 
-  factory ChatFunction.fromJson(Map<String, Object?> json) =>
-      _$ChatFunctionFromJson(json);
+  factory ChatFunction.fromJson(Map<String, Object?> json) => _$ChatFunctionFromJson(json);
 }
 
 @freezed
@@ -519,12 +510,20 @@ enum ChatMessageRole {
 
 extension ChatCompletion on OpenaiClient {
   static const kEndpoint = "chat/completions";
+
+  String gEndpoint(String endpoint, ChatCompletionRequest request) {
+    if (config.isAzure) {
+      return "openai/deployments/${request.engine}/$endpoint?api-version=${config.apiVersion}";
+    }
+    return endpoint;
+  }
+
   Future<ChatCompletionResponse> sendChatCompletion(
     ChatCompletionRequest request, {
     http.CancellationToken? cancellationToken,
   }) async {
     final data = await sendRequest(
-      ChatCompletion.kEndpoint,
+      gEndpoint(ChatCompletion.kEndpoint, request), // ChatCompletion.kEndpoint,
       request,
       cancellationToken: cancellationToken,
     );
@@ -537,10 +536,9 @@ extension ChatCompletion on OpenaiClient {
     http.CancellationToken? cancellationToken,
   }) async {
     return sendStreamRequest(
-      ChatCompletion.kEndpoint,
+      gEndpoint(ChatCompletion.kEndpoint, request), // ChatCompletion.kEndpoint,
       jsonEncode(request),
-      onSuccess: (data) =>
-          onSuccess?.call(ChatCompletionResponse.fromJson(data)),
+      onSuccess: (data) => onSuccess?.call(ChatCompletionResponse.fromJson(data)),
       cancellationToken: cancellationToken,
     );
   }

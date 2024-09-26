@@ -645,7 +645,12 @@ mixin _$ChatCompletionRequest {
   /// ID of the model to use. See the
   /// [model endpoint compatibility table](https://platform.openai.com/docs/models/model-endpoint-compatibility)
   /// for details on which models work with the Chat API.
-  String get model => throw _privateConstructorUsedError;
+  String? get model =>
+      throw _privateConstructorUsedError; // when engine is provided, model is ignored
+// deployment name in azure
+// https://learn.microsoft.com/zh-cn/azure/ai-services/openai/chatgpt-quickstart?tabs=command-line%2Cpython&pivots=programming-language-python
+  @JsonKey(ignore: true)
+  String? get engine => throw _privateConstructorUsedError;
 
   /// The messages to generate chat completions for, in the [chat format](https://platform.openai.com/docs/guides/chat/introduction).
   List<dynamic> get messages => throw _privateConstructorUsedError;
@@ -754,7 +759,8 @@ abstract class $ChatCompletionRequestCopyWith<$Res> {
       _$ChatCompletionRequestCopyWithImpl<$Res, ChatCompletionRequest>;
   @useResult
   $Res call(
-      {String model,
+      {String? model,
+      @JsonKey(ignore: true) String? engine,
       List<dynamic> messages,
       @Deprecated("Use tools instead") List<ChatFunction>? functions,
       @Deprecated("use toolChoice instead") dynamic functionCall,
@@ -789,7 +795,8 @@ class _$ChatCompletionRequestCopyWithImpl<$Res,
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? model = null,
+    Object? model = freezed,
+    Object? engine = freezed,
     Object? messages = null,
     Object? functions = freezed,
     Object? functionCall = freezed,
@@ -808,10 +815,14 @@ class _$ChatCompletionRequestCopyWithImpl<$Res,
     Object? user = freezed,
   }) {
     return _then(_value.copyWith(
-      model: null == model
+      model: freezed == model
           ? _value.model
           : model // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
+      engine: freezed == engine
+          ? _value.engine
+          : engine // ignore: cast_nullable_to_non_nullable
+              as String?,
       messages: null == messages
           ? _value.messages
           : messages // ignore: cast_nullable_to_non_nullable
@@ -902,7 +913,8 @@ abstract class _$$ChatCompletionRequestImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String model,
+      {String? model,
+      @JsonKey(ignore: true) String? engine,
       List<dynamic> messages,
       @Deprecated("Use tools instead") List<ChatFunction>? functions,
       @Deprecated("use toolChoice instead") dynamic functionCall,
@@ -936,7 +948,8 @@ class __$$ChatCompletionRequestImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? model = null,
+    Object? model = freezed,
+    Object? engine = freezed,
     Object? messages = null,
     Object? functions = freezed,
     Object? functionCall = freezed,
@@ -955,10 +968,14 @@ class __$$ChatCompletionRequestImplCopyWithImpl<$Res>
     Object? user = freezed,
   }) {
     return _then(_$ChatCompletionRequestImpl(
-      model: null == model
+      model: freezed == model
           ? _value.model
           : model // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
+      engine: freezed == engine
+          ? _value.engine
+          : engine // ignore: cast_nullable_to_non_nullable
+              as String?,
       messages: null == messages
           ? _value._messages
           : messages // ignore: cast_nullable_to_non_nullable
@@ -1031,7 +1048,8 @@ class __$$ChatCompletionRequestImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ChatCompletionRequestImpl implements _ChatCompletionRequest {
   const _$ChatCompletionRequestImpl(
-      {required this.model,
+      {this.model,
+      @JsonKey(ignore: true) this.engine,
       required final List<dynamic> messages,
       @Deprecated("Use tools instead") final List<ChatFunction>? functions,
       @Deprecated("use toolChoice instead") this.functionCall,
@@ -1061,7 +1079,13 @@ class _$ChatCompletionRequestImpl implements _ChatCompletionRequest {
   /// [model endpoint compatibility table](https://platform.openai.com/docs/models/model-endpoint-compatibility)
   /// for details on which models work with the Chat API.
   @override
-  final String model;
+  final String? model;
+// when engine is provided, model is ignored
+// deployment name in azure
+// https://learn.microsoft.com/zh-cn/azure/ai-services/openai/chatgpt-quickstart?tabs=command-line%2Cpython&pivots=programming-language-python
+  @override
+  @JsonKey(ignore: true)
+  final String? engine;
 
   /// The messages to generate chat completions for, in the [chat format](https://platform.openai.com/docs/guides/chat/introduction).
   final List<dynamic> _messages;
@@ -1229,7 +1253,7 @@ class _$ChatCompletionRequestImpl implements _ChatCompletionRequest {
 
   @override
   String toString() {
-    return 'ChatCompletionRequest(model: $model, messages: $messages, functions: $functions, functionCall: $functionCall, temperature: $temperature, topP: $topP, n: $n, stream: $stream, stop: $stop, maxTokens: $maxTokens, presencePenalty: $presencePenalty, frequencyPenalty: $frequencyPenalty, responseFormat: $responseFormat, logitBias: $logitBias, tools: $tools, toolChoice: $toolChoice, user: $user)';
+    return 'ChatCompletionRequest(model: $model, engine: $engine, messages: $messages, functions: $functions, functionCall: $functionCall, temperature: $temperature, topP: $topP, n: $n, stream: $stream, stop: $stop, maxTokens: $maxTokens, presencePenalty: $presencePenalty, frequencyPenalty: $frequencyPenalty, responseFormat: $responseFormat, logitBias: $logitBias, tools: $tools, toolChoice: $toolChoice, user: $user)';
   }
 
   @override
@@ -1238,6 +1262,7 @@ class _$ChatCompletionRequestImpl implements _ChatCompletionRequest {
         (other.runtimeType == runtimeType &&
             other is _$ChatCompletionRequestImpl &&
             (identical(other.model, model) || other.model == model) &&
+            (identical(other.engine, engine) || other.engine == engine) &&
             const DeepCollectionEquality().equals(other._messages, _messages) &&
             const DeepCollectionEquality()
                 .equals(other._functions, _functions) &&
@@ -1270,6 +1295,7 @@ class _$ChatCompletionRequestImpl implements _ChatCompletionRequest {
   int get hashCode => Object.hash(
       runtimeType,
       model,
+      engine,
       const DeepCollectionEquality().hash(_messages),
       const DeepCollectionEquality().hash(_functions),
       const DeepCollectionEquality().hash(functionCall),
@@ -1304,7 +1330,8 @@ class _$ChatCompletionRequestImpl implements _ChatCompletionRequest {
 
 abstract class _ChatCompletionRequest implements ChatCompletionRequest {
   const factory _ChatCompletionRequest(
-      {required final String model,
+      {final String? model,
+      @JsonKey(ignore: true) final String? engine,
       required final List<dynamic> messages,
       @Deprecated("Use tools instead") final List<ChatFunction>? functions,
       @Deprecated("use toolChoice instead") final dynamic functionCall,
@@ -1330,7 +1357,12 @@ abstract class _ChatCompletionRequest implements ChatCompletionRequest {
   /// ID of the model to use. See the
   /// [model endpoint compatibility table](https://platform.openai.com/docs/models/model-endpoint-compatibility)
   /// for details on which models work with the Chat API.
-  String get model;
+  String? get model;
+  @override // when engine is provided, model is ignored
+// deployment name in azure
+// https://learn.microsoft.com/zh-cn/azure/ai-services/openai/chatgpt-quickstart?tabs=command-line%2Cpython&pivots=programming-language-python
+  @JsonKey(ignore: true)
+  String? get engine;
   @override
 
   /// The messages to generate chat completions for, in the [chat format](https://platform.openai.com/docs/guides/chat/introduction).
@@ -1455,7 +1487,7 @@ ResponseFormat _$ResponseFormatFromJson(Map<String, dynamic> json) {
 mixin _$ResponseFormat {
   /// Must be one of text or json_object.
   /// Defaults to text
-  String get text => throw _privateConstructorUsedError;
+  String get type => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -1469,7 +1501,7 @@ abstract class $ResponseFormatCopyWith<$Res> {
           ResponseFormat value, $Res Function(ResponseFormat) then) =
       _$ResponseFormatCopyWithImpl<$Res, ResponseFormat>;
   @useResult
-  $Res call({String text});
+  $Res call({String type});
 }
 
 /// @nodoc
@@ -1485,12 +1517,12 @@ class _$ResponseFormatCopyWithImpl<$Res, $Val extends ResponseFormat>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? text = null,
+    Object? type = null,
   }) {
     return _then(_value.copyWith(
-      text: null == text
-          ? _value.text
-          : text // ignore: cast_nullable_to_non_nullable
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
   }
@@ -1504,7 +1536,7 @@ abstract class _$$ResponseFormatImplCopyWith<$Res>
       __$$ResponseFormatImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String text});
+  $Res call({String type});
 }
 
 /// @nodoc
@@ -1518,12 +1550,12 @@ class __$$ResponseFormatImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? text = null,
+    Object? type = null,
   }) {
     return _then(_$ResponseFormatImpl(
-      text: null == text
-          ? _value.text
-          : text // ignore: cast_nullable_to_non_nullable
+      type: null == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -1532,7 +1564,7 @@ class __$$ResponseFormatImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$ResponseFormatImpl implements _ResponseFormat {
-  const _$ResponseFormatImpl({required this.text});
+  const _$ResponseFormatImpl({required this.type});
 
   factory _$ResponseFormatImpl.fromJson(Map<String, dynamic> json) =>
       _$$ResponseFormatImplFromJson(json);
@@ -1540,11 +1572,11 @@ class _$ResponseFormatImpl implements _ResponseFormat {
   /// Must be one of text or json_object.
   /// Defaults to text
   @override
-  final String text;
+  final String type;
 
   @override
   String toString() {
-    return 'ResponseFormat(text: $text)';
+    return 'ResponseFormat(type: $type)';
   }
 
   @override
@@ -1552,12 +1584,12 @@ class _$ResponseFormatImpl implements _ResponseFormat {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ResponseFormatImpl &&
-            (identical(other.text, text) || other.text == text));
+            (identical(other.type, type) || other.type == type));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, text);
+  int get hashCode => Object.hash(runtimeType, type);
 
   @JsonKey(ignore: true)
   @override
@@ -1575,7 +1607,7 @@ class _$ResponseFormatImpl implements _ResponseFormat {
 }
 
 abstract class _ResponseFormat implements ResponseFormat {
-  const factory _ResponseFormat({required final String text}) =
+  const factory _ResponseFormat({required final String type}) =
       _$ResponseFormatImpl;
 
   factory _ResponseFormat.fromJson(Map<String, dynamic> json) =
@@ -1585,7 +1617,7 @@ abstract class _ResponseFormat implements ResponseFormat {
 
   /// Must be one of text or json_object.
   /// Defaults to text
-  String get text;
+  String get type;
   @override
   @JsonKey(ignore: true)
   _$$ResponseFormatImplCopyWith<_$ResponseFormatImpl> get copyWith =>

@@ -90,6 +90,9 @@ class OpenaiClient {
     Function(dynamic)? onSuccess,
     http.CancellationToken? cancellationToken,
   }) async {
+    print(
+        "send stream request to ${config.baseUrl}/$endpoint\nwith header ${_authenticateHeaders(isBeta)..addAll(kJsonTypeHeader)}");
+
     var request = http.Request(
       'POST',
       Uri.parse("${config.baseUrl}/$endpoint"),
@@ -121,12 +124,10 @@ class OpenaiClient {
       return;
     }
 
-    final stream =
-        response.stream.transform(utf8.decoder).transform(const LineSplitter());
+    final stream = response.stream.transform(utf8.decoder).transform(const LineSplitter());
 
     await stream.forEach((data) {
-      final results =
-          data.split('\n').where((element) => element.isNotEmpty).toList();
+      final results = data.split('\n').where((element) => element.isNotEmpty).toList();
       for (var e in results) {
         if (e.startsWith(dataPrefix)) {
           final result = e.split(dataPrefix);
@@ -148,11 +149,7 @@ class OpenaiClient {
   }
 
   Map<String, String> _authenticateHeaders(bool isBeta) {
-    return {
-      'Authorization': 'Bearer ${config.apiKey}',
-      if (isBeta) 'OpenAI-Beta': 'assistants=v1',
-      if (config.organizationId != null) 'OpenAI-Organization': config.organizationId!,
-    };
+    return config.authenticateHeaders(isBeta);
   }
 
   static const kJsonTypeHeader = {
@@ -172,6 +169,7 @@ class OpenaiClient {
           final error = OpenaiError.fromJson(res['error']);
           throw OpenaiException(code: response.statusCode, error: error);
         }
+        print(res);
 
         /// receive a valid http status code but invalid error object
         throw OpenaiException(
@@ -181,9 +179,7 @@ class OpenaiClient {
       } on FormatException catch (e) {
         // server returns invalid json oject
         throw OpenaiException(
-            code: -1,
-            error:
-                OpenaiError(message: e.message, type: "invalid_json_format"));
+            code: -1, error: OpenaiError(message: e.message, type: "invalid_json_format"));
       }
     }
   }

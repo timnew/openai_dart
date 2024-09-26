@@ -1,37 +1,67 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:openai_api/openai_api.dart';
+
 import 'constants.dart';
 
-class OpenaiConfig {
-  OpenaiConfig({
-    required this.apiKey,
-    this.organizationId,
-    String? baseUrl,
-    this.httpProxy,
-  }) {
-    _baseUrl = baseUrl ?? Constants.kBaseUrl;
+part 'config.freezed.dart';
+
+@freezed
+class OpenaiConfig with _$OpenaiConfig {
+  const OpenaiConfig._();
+
+  // default factory is equal to OpenaiConfig.openai({
+  const factory OpenaiConfig({
+    required String apiKey,
+    String? organizationId,
+    @Default(Constants.kBaseUrl) String apiBaseUrl,
+    String? httpProxy,
+  }) = _Openai;
+
+  const factory OpenaiConfig.azure({
+    required String apiKey,
+    required String apiVersion,
+    required String apiBaseUrl,
+    String? httpProxy,
+  }) = _Azure;
+
+  bool get isAzure => this is _Azure;
+  bool get isOpenai => this is _Openai;
+
+  String get apiVersion {
+    if (isAzure) {
+      return (this as _Azure).apiVersion;
+    }
+    return "v1";
   }
 
-  /// [apiKey] is the API key for your OpenAI account.
-  final String apiKey;
-
-  /// [organizationId] is the ID of the organization you want to use.
-  /// Leave it null if no organization is used.
-  final String? organizationId;
-
-  /// [baseUrl] is the base URL for the OpenAI API. It defaults to
-  /// [Constants.kBaseUrl]. A '/v1' will be added at the end of url.
-  String _baseUrl = "";
-
-  /// [httpProxy] is the HTTP proxy to use for requests. If not specified,
-  /// no proxy will be used.
-  final String? httpProxy;
-
   String get baseUrl {
-    if (_baseUrl.endsWith("/")) {
-      _baseUrl = _baseUrl.replaceAll(RegExp(r'/+$'), "");
+    if (isAzure) {
+      return (this as _Azure).apiBaseUrl;
+    } else {
+      var apiBaseUrl = (this as _Openai).apiBaseUrl;
+      if (apiBaseUrl.endsWith("/")) {
+        apiBaseUrl = apiBaseUrl.replaceAll(RegExp(r'/+$'), "");
+      }
+      if (apiBaseUrl.endsWith("/v1")) {
+        return apiBaseUrl;
+      }
+      return "$apiBaseUrl/v1";
     }
-    if (_baseUrl.endsWith("/v1")) {
-      return _baseUrl;
+  }
+
+  Map<String, String> authenticateHeaders(bool isBeta) {
+    if (isAzure) {
+      return {
+        'api-key': apiKey,
+        'Content-Type': 'application/json',
+      };
+    } else {
+      final openai = this as _Openai;
+      return {
+        'Authorization': 'Bearer $apiKey',
+        if (isBeta) 'OpenAI-Beta': 'assistants=v1',
+        if (openai.organizationId != null) 'OpenAI-Organization': openai.organizationId!,
+      };
     }
-    return "$_baseUrl/v1";
   }
 }
